@@ -1,0 +1,54 @@
+MODULE main
+
+DEFINE
+lombric := 50;
+millepatte := 30;
+sauterelle := 20;
+feuille_capacity := 60;
+
+VAR
+
+feuille_load: 0..150;
+
+lombric_arrived: 0..1;
+millepatte_arrived: 0..1;
+sauterelle_arrived: 0..1;
+
+feuille_arrived: 0..1;
+
+ASSIGN
+
+
+init(lombric_arrived) :=0;
+init(millepatte_arrived) :=0;
+init(sauterelle_arrived) :=0;
+
+init(feuille_arrived):= 0;
+
+init(feuille_load) := 1;  
+
+next(feuille_arrived) := 1 - feuille_arrived;
+
+next(lombric_arrived) := case
+    lombric_arrived=0 & feuille_arrived=0 :  {0,1};
+    lombric_arrived=1 & feuille_arrived=1 :  {0,1};
+    TRUE : lombric_arrived;
+    esac;
+
+next(sauterelle_arrived) := case
+    sauterelle_arrived=0 & feuille_arrived=0 :  {0,1};
+    sauterelle_arrived=1 & feuille_arrived=1 : {0,1};
+    TRUE : sauterelle_arrived;
+    esac;
+    
+next(millepatte_arrived) := case
+    millepatte_arrived=0 & feuille_arrived=0 :  {0,1};
+    millepatte_arrived=1 & feuille_arrived=1 :  {0,1};
+    TRUE : millepatte_arrived;
+    esac;
+
+next(feuille_load) := abs(next(lombric_arrived) - lombric_arrived) * lombric + abs(next(millepatte_arrived) - millepatte_arrived) * millepatte + abs(next(sauterelle_arrived) - sauterelle_arrived) * sauterelle;
+
+-- On demande l'inverse de la spécification pour avoir un contre-exemple qui correspond donc à une solution du problème
+-- SPEC !E[ (feuille_load <= feuille_capacity & feuille_load > 0 ) U (lombric_arrived* millepatte_arrived*sauterelle_arrived = 1 &  feuille_load <= feuille_capacity & feuille_load>0) ];
+SPEC  feuille_arrived=0;

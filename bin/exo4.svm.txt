@@ -1,0 +1,29 @@
+MODULE main 
+VAR
+a  : boolean ; 
+b  : boolean ; 
+
+ASSIGN
+init(a) := TRUE;
+init(b) := FALSE;
+
+next(a) := case 
+	a & !b : {TRUE,FALSE};
+	!a & !b : FALSE;
+	!a & b : FALSE;
+	a & b : TRUE;
+	esac;
+next(b) := case
+	a & !b: case 
+		next(a) : TRUE;
+		!next(a): {TRUE,FALSE};
+		esac;
+	!a & !b: TRUE;
+	a & b: FALSE;
+	!a & b: TRUE;
+	esac;
+SPEC AF(AG a | AG b);
+
+
+
+    
